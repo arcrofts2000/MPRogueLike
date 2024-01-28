@@ -4,7 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
+#include "InputActionValue.h"
+
 #include "MPRLCharacter.generated.h"
+
+class UInputMappingContext;
+class UInputAction;
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -13,6 +19,21 @@ UCLASS()
 class MPROGUELIKE_API AMPRLCharacter : public ACharacter
 {
 	GENERATED_BODY()
+
+protected:
+	// Input
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputMappingContext> DefaultInputMapping;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_Move;
+	void Move(const FInputActionValue& InputValue);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_LookMouse;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_LookStick;
 
 public:
 	// Sets default values for this character's properties

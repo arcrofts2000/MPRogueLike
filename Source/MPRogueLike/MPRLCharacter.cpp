@@ -40,4 +40,47 @@ void AMPRLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	const APlayerController* PC = GetController<APlayerController>();
+	const ULocalPlayer* LP = PC->GetLocalPlayer();
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(Subsystem);
+
+	Subsystem->ClearAllMappings();
+
+	// Add the mappings for the game!
+	Subsystem->AddMappingContext(DefaultInputMapping, 0);
+
+	// New Enhanced Input System
+	UEnhancedInputComponent* InputComp = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+
+	// General
+	InputComp->BindAction(Input_Move, ETriggerEvent::Triggered, this, &AMPRLCharacter::Move);
+
+	// Sprint while holding key
+
+
+	// MKB
+
+	// Gamepad
+
+
+	// Abilities
+
+}
+
+void AMPRLCharacter::Move(const FInputActionValue& InputValue)
+{
+	FRotator ControlRot = GetControlRotation();
+	ControlRot.Pitch = 0.f;
+	ControlRot.Roll = 0.f;
+
+	const FVector2D AxisValue = InputValue.Get<FVector2D>();
+
+	// Move Forward or Backward
+	AddMovementInput(ControlRot.Vector(), AxisValue.Y);
+
+	// Move Left or Right
+	const FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
+	AddMovementInput(RightVector, AxisValue.X);
 }
