@@ -62,6 +62,7 @@ void AMPRLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	// General
 	InputComp->BindAction(Input_Move, ETriggerEvent::Triggered, this, &AMPRLCharacter::Move);
 	InputComp->BindAction(Input_LookMouse, ETriggerEvent::Triggered, this, &AMPRLCharacter::LookMouse);
+	InputComp->BindAction(Input_PrimaryAttack, ETriggerEvent::Completed, this, &AMPRLCharacter::PrimaryAttack);
 
 	// Sprint while holding key
 
@@ -97,4 +98,14 @@ void AMPRLCharacter::LookMouse(const FInputActionValue& InputValue)
 
 	AddControllerYawInput(Value.X);
 	AddControllerPitchInput(Value.Y);
+}
+
+void AMPRLCharacter::PrimaryAttack()
+{
+	FTransform SpawnTM = FTransform(GetControlRotation(), GetActorLocation());
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }

@@ -36,6 +36,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_LookStick;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_PrimaryAttack;
+	void PrimaryAttack();
+
 public:
 	// Sets default values for this character's properties
 	AMPRLCharacter();
@@ -47,6 +51,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UCameraComponent> CameraComp;
+
+	UPROPERTY(EditAnywhere, Category = "Attacks")
+	TSubclassOf<AActor> ProjectileClass;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
