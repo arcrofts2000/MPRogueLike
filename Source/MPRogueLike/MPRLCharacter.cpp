@@ -56,6 +56,7 @@ void AMPRLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 	// General
 	InputComp->BindAction(Input_Move, ETriggerEvent::Triggered, this, &AMPRLCharacter::Move);
+	InputComp->BindAction(Input_LookMouse, ETriggerEvent::Triggered, this, &AMPRLCharacter::LookMouse);
 
 	// Sprint while holding key
 
@@ -83,4 +84,12 @@ void AMPRLCharacter::Move(const FInputActionValue& InputValue)
 	// Move Left or Right
 	const FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
 	AddMovementInput(RightVector, AxisValue.X);
+}
+
+void AMPRLCharacter::LookMouse(const FInputActionValue& InputValue)
+{
+	const FVector2D Value = InputValue.Get<FVector2D>();
+
+	AddControllerYawInput(Value.X);
+	AddControllerPitchInput(Value.Y);
 }
