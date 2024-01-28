@@ -14,6 +14,7 @@ AMPRLProjectile::AMPRLProjectile()
 
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
 	SetRootComponent(SphereComp);
+	SphereComp->SetCollisionProfileName("Projectile");
 
 	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
 	EffectComp->SetupAttachment(SphereComp);

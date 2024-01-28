@@ -40,6 +40,9 @@ protected:
 	TObjectPtr<UInputAction> Input_PrimaryAttack;
 	void PrimaryAttack();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_Jump;
+
 public:
 	// Sets default values for this character's properties
 	AMPRLCharacter();

@@ -63,6 +63,7 @@ void AMPRLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	InputComp->BindAction(Input_Move, ETriggerEvent::Triggered, this, &AMPRLCharacter::Move);
 	InputComp->BindAction(Input_LookMouse, ETriggerEvent::Triggered, this, &AMPRLCharacter::LookMouse);
 	InputComp->BindAction(Input_PrimaryAttack, ETriggerEvent::Completed, this, &AMPRLCharacter::PrimaryAttack);
+	InputComp->BindAction(Input_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
 
 	// Sprint while holding key
 
@@ -102,7 +103,8 @@ void AMPRLCharacter::LookMouse(const FInputActionValue& InputValue)
 
 void AMPRLCharacter::PrimaryAttack()
 {
-	FTransform SpawnTM = FTransform(GetControlRotation(), GetActorLocation());
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
