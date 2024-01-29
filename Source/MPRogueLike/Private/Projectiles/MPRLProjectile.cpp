@@ -31,6 +31,7 @@ void AMPRLProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
 }
 
 void AMPRLProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -40,7 +41,7 @@ void AMPRLProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* Othe
 
 void AMPRLProjectile::Explode_Implementation()
 {
-	if (ensure(!IsPendingKill()))
+	if (ensure(IsValid(this)))
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
 		Destroy();
