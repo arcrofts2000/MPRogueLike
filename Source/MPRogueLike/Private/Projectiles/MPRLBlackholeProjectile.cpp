@@ -32,3 +32,10 @@ void AMPRLBlackholeProjectile::OnComponentBeginOverlap(UPrimitiveComponent* Over
 		OtherComp->GetOwner()->Destroy();
 	}
 }
+
+void AMPRLBlackholeProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+
+	RadialForceComp->Activate();
+}
