@@ -6,7 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "MPRLBarrel.generated.h"
 
+class UStaticMeshComponent;
 class URadialForceComponent;
+class UParticleSystem;
 
 UCLASS()
 class MPROGUELIKE_API AMPRLBarrel : public AActor
@@ -27,6 +29,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<URadialForceComponent> RadialForce;
 
+	UPROPERTY(EditAnywhere, Category = "Cosmetic")
+	TObjectPtr<UParticleSystem> ParticleSystem;
+
 	UFUNCTION()
 	void OnActorHit(UPrimitiveComponent* HitComponent,
 		AActor* OtherActor, 
@@ -37,5 +42,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void PostInitializeComponents() override;
 
 };

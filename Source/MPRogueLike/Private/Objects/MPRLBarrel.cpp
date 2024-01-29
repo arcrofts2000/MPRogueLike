@@ -4,6 +4,9 @@
 #include "Objects/MPRLBarrel.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Particles/ParticleSystem.h"
 
 // Sets default values
 AMPRLBarrel::AMPRLBarrel()
@@ -17,13 +20,22 @@ AMPRLBarrel::AMPRLBarrel()
 
 	RadialForce = CreateDefaultSubobject<URadialForceComponent>("RadialForce");
 	RadialForce->SetupAttachment(StaticMesh);
-	RadialForce->bAutoActivate = false;
+	RadialForce->SetAutoActivate(false);
 
 	RadialForce->Radius = 750.f;
 	RadialForce->ImpulseStrength = 2000.f;
 	RadialForce->bImpulseVelChange = true;
 
 	RadialForce->AddCollisionChannelToAffect(ECC_WorldDynamic);
+
+	ParticleSystem = CreateDefaultSubobject<UParticleSystem>("ParticleSystem");
+}
+
+void AMPRLBarrel::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	StaticMesh->OnComponentHit.AddDynamic(this, &AMPRLBarrel::OnActorHit);
 }
 
 // Called when the game starts or when spawned
@@ -31,12 +43,13 @@ void AMPRLBarrel::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	StaticMesh->OnComponentHit.AddDynamic(this, &AMPRLBarrel::OnActorHit);
+
 }
 
 void AMPRLBarrel::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	RadialForce->FireImpulse();
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, GetActorLocation());
 	Destroy();
 }
 
