@@ -4,6 +4,7 @@
 #include "Player/MPRLCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/MPRLInteractionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -20,6 +21,8 @@ AMPRLCharacter::AMPRLCharacter()
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
+
+	InteractionComp = CreateDefaultSubobject<UMPRLInteractionComponent>("InteractionComp");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
@@ -64,6 +67,7 @@ void AMPRLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	InputComp->BindAction(Input_LookMouse, ETriggerEvent::Triggered, this, &AMPRLCharacter::LookMouse);
 	InputComp->BindAction(Input_PrimaryAttack, ETriggerEvent::Completed, this, &AMPRLCharacter::PrimaryAttack);
 	InputComp->BindAction(Input_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
+	InputComp->BindAction(Input_PrimaryInteract, ETriggerEvent::Started, this, &AMPRLCharacter::PrimaryInteract);
 
 	// Sprint while holding key
 
@@ -110,4 +114,10 @@ void AMPRLCharacter::PrimaryAttack()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+}
+
+void AMPRLCharacter::PrimaryInteract()
+{
+	if (InteractionComp)
+		InteractionComp->PrimaryInteract();
 }

@@ -14,6 +14,7 @@ class UInputAction;
 
 class USpringArmComponent;
 class UCameraComponent;
+class UMPRLInteractionComponent;
 
 UCLASS()
 class MPROGUELIKE_API AMPRLCharacter : public ACharacter
@@ -43,6 +44,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_Jump;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_PrimaryInteract;
+	void PrimaryInteract();
+
 public:
 	// Sets default values for this character's properties
 	AMPRLCharacter();
@@ -54,6 +59,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UCameraComponent> CameraComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TObjectPtr<UMPRLInteractionComponent> InteractionComp;
 
 	UPROPERTY(EditAnywhere, Category = "Attacks")
 	TSubclassOf<AActor> ProjectileClass;
