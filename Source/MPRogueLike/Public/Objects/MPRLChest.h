@@ -25,7 +25,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
 
-	UPROPERTY(VisibleAnywhere, Category = "Mesh")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
 	TObjectPtr<UStaticMeshComponent> LidMesh;
 
 	// Called when the game starts or when spawned
