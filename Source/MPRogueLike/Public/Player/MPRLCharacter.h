@@ -15,6 +15,7 @@ class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
 class UMPRLInteractionComponent;
+class UAnimMontage;
 
 UCLASS()
 class MPROGUELIKE_API AMPRLCharacter : public ACharacter
@@ -40,6 +41,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_PrimaryAttack;
 	void PrimaryAttack();
+	FTimerHandle TimerHandle_PrimaryAttack;
+	void PrimaryAttack_TimeElapsed();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_Jump;
@@ -65,6 +68,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Attacks")
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attacks")
+	TObjectPtr<UAnimMontage> PrimaryAttackAnim;
+
+	
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

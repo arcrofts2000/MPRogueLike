@@ -63,6 +63,7 @@ void UMPRLInteractionComponent::PrimaryInteract()
 			{
 				APawn* MyPawn = Cast<APawn>(MyOwner);
 				IMPRLGameplayInterface::Execute_Interact(HitActor, MyPawn);
+				break;
 			}
 		}
 		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.f);

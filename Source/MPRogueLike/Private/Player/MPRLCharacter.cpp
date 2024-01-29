@@ -107,6 +107,14 @@ void AMPRLCharacter::LookMouse(const FInputActionValue& InputValue)
 
 void AMPRLCharacter::PrimaryAttack()
 {
+	PlayAnimMontage(PrimaryAttackAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AMPRLCharacter::PrimaryAttack_TimeElapsed, 0.2f);
+
+}
+
+void AMPRLCharacter::PrimaryAttack_TimeElapsed()
+{
 	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
 
