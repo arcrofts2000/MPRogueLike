@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AMPRLCharacter::AMPRLCharacter()
@@ -115,14 +116,45 @@ void AMPRLCharacter::PrimaryAttack()
 
 void AMPRLCharacter::PrimaryAttack_TimeElapsed()
 {
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
+	SpawnProjectile(ProjectileClass);
+}
 
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
+void AMPRLCharacter::SpawnProjectile(TSubclassOf<AActor> SpawnedProjectile)
+{
+	if (ensureAlways(SpawnedProjectile))
+	{
+		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this;
+
+		FCollisionShape Shape;
+		Shape.SetSphere(20.f);
+
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+
+		FCollisionObjectQueryParams ObjectParams;
+		ObjectParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+		ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		ObjectParams.AddObjectTypesToQuery(ECC_Pawn);
+
+		FVector StartTrace = CameraComp->GetComponentLocation();
+		
+		FVector EndTrace = CameraComp->GetComponentLocation() + (GetControlRotation().Vector() * 5000.f);
+		FHitResult Hit;
+		
+		if (GetWorld()->SweepSingleByObjectType(Hit, StartTrace, EndTrace, FQuat::Identity, ObjectParams, Shape, Params))
+		{
+			EndTrace = Hit.ImpactPoint;
+		}
+
+		FRotator ProjectileRotation = FRotationMatrix::MakeFromX(EndTrace - HandLocation).Rotator();
+
+		FTransform SpawnTM = FTransform(ProjectileRotation, HandLocation);
+		GetWorld()->SpawnActor<AActor>(SpawnedProjectile, SpawnTM, SpawnParams);
+	}
 }
 
 void AMPRLCharacter::PrimaryInteract()

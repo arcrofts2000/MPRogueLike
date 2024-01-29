@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Particles/ParticleSystem.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AMPRLBarrel::AMPRLBarrel()
@@ -51,6 +52,13 @@ void AMPRLBarrel::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 	RadialForce->FireImpulse();
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, GetActorLocation());
 	Destroy();
+
+	UE_LOG(LogTemp, Log, TEXT("OnActorHit in MPRLBarrel"));
+
+	UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s, at game time: %f"), *GetNameSafe(OtherActor), GetWorld()->TimeSeconds);
+
+	FString CombinedString = FString::Printf(TEXT("Hit at location: %s"), *Hit.ImpactPoint.ToString());
+	DrawDebugString(GetWorld(), Hit.ImpactPoint, CombinedString, nullptr, FColor::Green, 2.f, true);
 }
 
 // Called every frame

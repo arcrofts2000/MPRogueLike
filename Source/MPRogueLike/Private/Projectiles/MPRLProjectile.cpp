@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMPRLProjectile::AMPRLProjectile()
@@ -30,6 +31,25 @@ void AMPRLProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AMPRLProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	Explode();
+}
+
+void AMPRLProjectile::Explode_Implementation()
+{
+	if (ensure(!IsPendingKill()))
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
+		Destroy();
+	}
+}
+
+void AMPRLProjectile::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 }
 
 // Called every frame

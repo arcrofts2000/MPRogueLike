@@ -44,6 +44,8 @@ protected:
 	FTimerHandle TimerHandle_PrimaryAttack;
 	void PrimaryAttack_TimeElapsed();
 
+	void SpawnProjectile(TSubclassOf<AActor> SpawnedProjectile);
+
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_Jump;
 
