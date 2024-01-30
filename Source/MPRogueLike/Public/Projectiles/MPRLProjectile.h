@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Projectiles/MPRLProjectileBase.h"
 #include "MPRLProjectile.generated.h"
 
 class USphereComponent;
@@ -11,41 +11,22 @@ class UProjectileMovementComponent;
 class UParticleSystemComponent;
 
 UCLASS(ABSTRACT)
-class MPROGUELIKE_API AMPRLProjectile : public AActor
+class MPROGUELIKE_API AMPRLProjectile : public AMPRLProjectileBase
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
-	AMPRLProjectile();
-
 protected:
-
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	TObjectPtr<UParticleSystem> ImpactVFX;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<USphereComponent> SphereComp;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UProjectileMovementComponent> MovementComp;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UParticleSystemComponent> EffectComp;
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float DamageAmount;
 
 	UFUNCTION()
-	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Explode();
-
-	virtual void PostInitializeComponents() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+public:
+	AMPRLProjectile();
 };

@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Particles/ParticleSystem.h"
+#include "Components/MPRLAttributeComponent.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -51,6 +52,12 @@ void AMPRLBarrel::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 {
 	RadialForce->FireImpulse();
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, GetActorLocation());
+
+	if (UMPRLAttributeComponent* AttributeComp = Cast<UMPRLAttributeComponent>(OtherActor->GetComponentByClass(UMPRLAttributeComponent::StaticClass())))
+	{
+		AttributeComp->ApplyHealthChange(-30.f);
+	}
+
 	Destroy();
 
 	UE_LOG(LogTemp, Log, TEXT("OnActorHit in MPRLBarrel"));

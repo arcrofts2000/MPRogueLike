@@ -5,10 +5,12 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/MPRLInteractionComponent.h"
+#include "Components/MPRLAttributeComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AMPRLCharacter::AMPRLCharacter()
@@ -24,6 +26,7 @@ AMPRLCharacter::AMPRLCharacter()
 	CameraComp->SetupAttachment(SpringArmComp);
 
 	InteractionComp = CreateDefaultSubobject<UMPRLInteractionComponent>("InteractionComp");
+	AttributeComp = CreateDefaultSubobject<UMPRLAttributeComponent>("AttributeComp");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
@@ -66,7 +69,6 @@ void AMPRLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	// General
 	InputComp->BindAction(Input_Move, ETriggerEvent::Triggered, this, &AMPRLCharacter::Move);
 	InputComp->BindAction(Input_LookMouse, ETriggerEvent::Triggered, this, &AMPRLCharacter::LookMouse);
-	InputComp->BindAction(Input_PrimaryAttack, ETriggerEvent::Completed, this, &AMPRLCharacter::PrimaryAttack);
 	InputComp->BindAction(Input_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
 	InputComp->BindAction(Input_PrimaryInteract, ETriggerEvent::Started, this, &AMPRLCharacter::PrimaryInteract);
 
@@ -79,6 +81,9 @@ void AMPRLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 
 	// Abilities
+	InputComp->BindAction(Input_PrimaryAttack, ETriggerEvent::Completed, this, &AMPRLCharacter::PrimaryAttack);
+	InputComp->BindAction(Input_BlackholeAttack, ETriggerEvent::Completed, this, &AMPRLCharacter::BlackholeAttack);
+	InputComp->BindAction(Input_DashAttack, ETriggerEvent::Completed, this, &AMPRLCharacter::DashAttack);
 
 }
 
@@ -114,9 +119,33 @@ void AMPRLCharacter::PrimaryAttack()
 
 }
 
+void AMPRLCharacter::DashAttack()
+{
+	PlayAnimMontage(PrimaryAttackAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AMPRLCharacter::DashAttack_TimeElapsed, .2f);
+}
+
+void AMPRLCharacter::BlackholeAttack()
+{
+	PlayAnimMontage(PrimaryAttackAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AMPRLCharacter::BlackholeAttack_TimeElapsed, .2f);
+}
+
 void AMPRLCharacter::PrimaryAttack_TimeElapsed()
 {
-	SpawnProjectile(ProjectileClass);
+	SpawnProjectile(MagicProjectileClass);
+}
+
+void AMPRLCharacter::DashAttack_TimeElapsed()
+{
+	SpawnProjectile(DashProjectileClass);
+}
+
+void AMPRLCharacter::BlackholeAttack_TimeElapsed()
+{
+	SpawnProjectile(BlackholeProjectileClass);
 }
 
 void AMPRLCharacter::SpawnProjectile(TSubclassOf<AActor> SpawnedProjectile)
@@ -141,16 +170,20 @@ void AMPRLCharacter::SpawnProjectile(TSubclassOf<AActor> SpawnedProjectile)
 		ObjectParams.AddObjectTypesToQuery(ECC_Pawn);
 
 		FVector StartTrace = CameraComp->GetComponentLocation();
-		
+
 		FVector EndTrace = CameraComp->GetComponentLocation() + (GetControlRotation().Vector() * 5000.f);
 		FHitResult Hit;
-		
+
+		FRotator ProjectileRotation;
 		if (GetWorld()->SweepSingleByObjectType(Hit, StartTrace, EndTrace, FQuat::Identity, ObjectParams, Shape, Params))
 		{
-			EndTrace = Hit.ImpactPoint;
+			ProjectileRotation = FRotationMatrix::MakeFromX(Hit.ImpactPoint - HandLocation).Rotator();
+		}
+		else
+		{
+			ProjectileRotation = FRotationMatrix::MakeFromX(EndTrace - HandLocation).Rotator();
 		}
 
-		FRotator ProjectileRotation = FRotationMatrix::MakeFromX(EndTrace - HandLocation).Rotator();
 
 		FTransform SpawnTM = FTransform(ProjectileRotation, HandLocation);
 		GetWorld()->SpawnActor<AActor>(SpawnedProjectile, SpawnTM, SpawnParams);

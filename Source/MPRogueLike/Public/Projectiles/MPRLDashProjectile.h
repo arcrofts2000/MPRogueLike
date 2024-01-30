@@ -3,25 +3,31 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Projectiles/MPRLProjectile.h"
+#include "Projectiles/MPRLProjectileBase.h"
 #include "MPRLDashProjectile.generated.h"
 
 UCLASS()
-class MPROGUELIKE_API AMPRLDashProjectile : public AMPRLProjectile
+class MPROGUELIKE_API AMPRLDashProjectile : public AMPRLProjectileBase
 {
 	GENERATED_BODY()
-public:
-
 
 protected:
 	
-	//UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	//virtual void Explode() override;
+	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
+	float TeleportDelay;
 
-	FTimerHandle TimerHandle_Explode;
-	void Explode_TimeElapsed();
+	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
+	float DetonateDelay;
 
-	FTimerHandle TimerHandle_Teleport;
-	void Teleport_TimeElapsed();
+	FTimerHandle TimerHandle_DelayedDetonate;
 
+	virtual void Explode_Implementation() override;
+
+	void TeleportInstigator();
+
+	virtual void BeginPlay() override;
+
+
+public:
+	AMPRLDashProjectile();
 };

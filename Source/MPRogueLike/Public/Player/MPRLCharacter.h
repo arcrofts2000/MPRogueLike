@@ -15,6 +15,7 @@ class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
 class UMPRLInteractionComponent;
+class UMPRLAttributeComponent;
 class UAnimMontage;
 
 UCLASS()
@@ -37,6 +38,16 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_LookStick;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_DashAttack;
+	void DashAttack();
+	void DashAttack_TimeElapsed();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_BlackholeAttack;
+	void BlackholeAttack();
+	void BlackholeAttack_TimeElapsed();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_PrimaryAttack;
@@ -68,8 +79,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UMPRLInteractionComponent> InteractionComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UMPRLAttributeComponent> AttributeComp;
+
 	UPROPERTY(EditAnywhere, Category = "Attacks")
-	TSubclassOf<AActor> ProjectileClass;
+	TSubclassOf<AActor> MagicProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attacks")
+	TSubclassOf<AActor> DashProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attacks")
+	TSubclassOf<AActor> BlackholeProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attacks")
 	TObjectPtr<UAnimMontage> PrimaryAttackAnim;

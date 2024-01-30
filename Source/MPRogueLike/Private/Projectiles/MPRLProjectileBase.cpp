@@ -15,11 +15,18 @@ AMPRLProjectileBase::AMPRLProjectileBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
+	SphereComp->SetCollisionProfileName("Projectile");
+	SphereComp->OnComponentHit.AddDynamic(this, &AMPRLProjectileBase::OnActorHit);
 	SetRootComponent(SphereComp);
 
 	MoveComp = CreateDefaultSubobject<UProjectileMovementComponent>("MoveComp");
+	MoveComp->bRotationFollowsVelocity = true;
+	MoveComp->bInitialVelocityInLocalSpace = true;
+	MoveComp->ProjectileGravityScale = 0.f;
+	MoveComp->InitialSpeed = 8000.f;
 	
 	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
+	EffectComp->SetupAttachment(SphereComp);
 }
 
 void AMPRLProjectileBase::OnActorHit(UPrimitiveComponent* HitComponent,
@@ -39,6 +46,12 @@ void AMPRLProjectileBase::Explode_Implementation()
 
 		Destroy();
 	}
+}
+
+void AMPRLProjectileBase::BeginPlay()
+{
+	Super::BeginPlay();
+	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
 }
 
 void AMPRLProjectileBase::PostInitializeComponents()

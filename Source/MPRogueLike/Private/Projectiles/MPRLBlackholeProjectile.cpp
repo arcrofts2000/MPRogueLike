@@ -7,22 +7,31 @@
 
 AMPRLBlackholeProjectile::AMPRLBlackholeProjectile()
 {
+	DestroyDelay = 5.f;
+
+	SphereComp->SetSphereRadius(55.f);
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AMPRLBlackholeProjectile::OnComponentBeginOverlap);
+
 	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>("RadialForceComp");
-	RadialForceComp->ForceStrength = -1000.f;
-
-	BlackholeComp = CreateDefaultSubobject<USphereComponent>("BlackholeComp");
+	RadialForceComp->SetupAttachment(SphereComp);
+	RadialForceComp->Radius = 1000.f;
+	RadialForceComp->ForceStrength = -200000.f;
 }
 
-void AMPRLBlackholeProjectile::PostInitializeComponents()
+void AMPRLBlackholeProjectile::BeginPlay()
 {
-	Super::PostInitializeComponents();
-
-	BlackholeComp->OnComponentBeginOverlap.AddDynamic(this, &AMPRLBlackholeProjectile::OnComponentBeginOverlap);
+	Super::BeginPlay();
+	GetWorldTimerManager().SetTimer(TimerHandle_DestroySelf, this, &AMPRLBlackholeProjectile::DestroySelf, DestroyDelay);
 }
 
-void AMPRLBlackholeProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
-	AActor* OtherActor, 
-	UPrimitiveComponent* OtherComp, 
+void AMPRLBlackholeProjectile::DestroySelf()
+{
+	Destroy();
+}
+
+void AMPRLBlackholeProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
@@ -31,11 +40,4 @@ void AMPRLBlackholeProjectile::OnComponentBeginOverlap(UPrimitiveComponent* Over
 	{
 		OtherComp->GetOwner()->Destroy();
 	}
-}
-
-void AMPRLBlackholeProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-
-	RadialForceComp->Activate();
 }

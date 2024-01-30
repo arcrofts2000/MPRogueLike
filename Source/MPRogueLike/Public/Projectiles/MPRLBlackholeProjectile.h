@@ -3,28 +3,35 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Projectiles/MPRLProjectile.h"
+#include "Projectiles/MPRLProjectileBase.h"
 #include "MPRLBlackholeProjectile.generated.h"
 
 class URadialForceComponent;
 class USphereComponent;
 
 UCLASS()
-class MPROGUELIKE_API AMPRLBlackholeProjectile : public AMPRLProjectile
+class MPROGUELIKE_API AMPRLBlackholeProjectile : public AMPRLProjectileBase
 {
 	GENERATED_BODY()
 
 public:
 	AMPRLBlackholeProjectile();
 
-	virtual void PostInitializeComponents() override;
+	
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	TObjectPtr<USphereComponent> BlackholeComp;
 
-	UPROPERTY(EditAnywhere, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, Category = "Blackhole")
+	float DestroyDelay;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<URadialForceComponent> RadialForceComp;
+
+	FTimerHandle TimerHandle_DestroySelf;
+
+	void DestroySelf();
+
+	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -33,6 +40,5 @@ protected:
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult& SweepResult);
-
-	virtual void BeginPlay() override;
+	
 };

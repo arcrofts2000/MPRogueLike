@@ -5,58 +5,33 @@
 #include "Components/SphereComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Components/MPRLAttributeComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMPRLProjectile::AMPRLProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	SphereComp->SetSphereRadius(20.f);
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AMPRLProjectile::OnActorOverlap);
 
-	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
-	SetRootComponent(SphereComp);
-	SphereComp->SetCollisionProfileName("Projectile");
-
-	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
-	EffectComp->SetupAttachment(SphereComp);
-
-	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComp");
-	MovementComp->InitialSpeed = 1000.0f;
-	MovementComp->bRotationFollowsVelocity = true;
-	MovementComp->bInitialVelocityInLocalSpace = true;
+	DamageAmount = 20.f;
 }
 
-// Called when the game starts or when spawned
-void AMPRLProjectile::BeginPlay()
+void AMPRLProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
 {
-	Super::BeginPlay();
-	
-	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
-}
-
-void AMPRLProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	Explode();
-}
-
-void AMPRLProjectile::Explode_Implementation()
-{
-	if (ensure(IsValid(this)))
+	if (OtherActor && OtherActor != GetInstigator())
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
-		Destroy();
+		if (UMPRLAttributeComponent* AttributeComp = Cast<UMPRLAttributeComponent>(OtherActor->GetComponentByClass(UMPRLAttributeComponent::StaticClass())))
+		{
+			AttributeComp->ApplyHealthChange(-20.f);
+		}
+
+		Explode();
 	}
-}
-
-void AMPRLProjectile::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-}
-
-// Called every frame
-void AMPRLProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
