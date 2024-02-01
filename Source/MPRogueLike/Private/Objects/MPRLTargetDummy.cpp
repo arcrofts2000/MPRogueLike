@@ -19,4 +19,7 @@ void AMPRLTargetDummy::OnHealthChanged(AActor* InstigatorActor, UMPRLAttributeCo
 {
 	if (Delta < 0.f)
 		SkeletalMesh->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->DeltaTimeSeconds);
+
+	if (NewHealth <= 0.f)
+		Destroy();
 }

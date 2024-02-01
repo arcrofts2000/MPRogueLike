@@ -26,6 +26,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UMPRLAttributeComponent> AttributeComp;
 
+	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, UMPRLAttributeComponent* OwningComp, float NewHealth, float Delta);
 
 };

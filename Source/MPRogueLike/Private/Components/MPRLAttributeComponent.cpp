@@ -16,3 +16,8 @@ bool UMPRLAttributeComponent::ApplyHealthChange(float Delta)
 
 	return true;
 }
+
+bool UMPRLAttributeComponent::IsAlive() const
+{
+	return Health > 0.f;
+}

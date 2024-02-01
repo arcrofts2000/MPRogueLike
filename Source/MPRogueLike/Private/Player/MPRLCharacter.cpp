@@ -33,6 +33,14 @@ AMPRLCharacter::AMPRLCharacter()
 	bUseControllerRotationYaw = false;
 }
 
+void AMPRLCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &AMPRLCharacter::OnHealthChanged);
+}
+
+
 // Called when the game starts or when spawned
 void AMPRLCharacter::BeginPlay()
 {
@@ -194,4 +202,13 @@ void AMPRLCharacter::PrimaryInteract()
 {
 	if (InteractionComp)
 		InteractionComp->PrimaryInteract();
+}
+
+void AMPRLCharacter::OnHealthChanged(AActor* InstigatorActor, UMPRLAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+	if (NewHealth <= 0.f && Delta < 0.f)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		DisableInput(PC);
+	}
 }

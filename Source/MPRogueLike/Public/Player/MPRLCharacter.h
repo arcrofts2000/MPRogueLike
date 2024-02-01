@@ -24,6 +24,11 @@ class MPROGUELIKE_API AMPRLCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, UMPRLAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	virtual void PostInitializeComponents() override;
+
 	// Input
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> DefaultInputMapping;
