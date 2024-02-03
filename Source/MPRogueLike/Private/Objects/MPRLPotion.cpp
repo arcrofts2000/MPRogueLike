@@ -11,6 +11,11 @@ AMPRLPotion::AMPRLPotion()
 	SetRootComponent(MeshComp);
 }
 
+void AMPRLPotion::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void AMPRLPotion::Interact_Implementation(APawn* InstigatorPawn)
 {
 
